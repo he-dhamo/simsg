@@ -1,0 +1,42 @@
+# arguments for easier parsing
+seed: 1
+gpu: 0
+
+# DATA OPTIONS
+dataset: clevr
+vg_image_dir: ./datasets/clevr/target
+output_dir: experiments/clevr
+checkpoint_name: crn_64_clevr
+log_dir: experiments/clevr/logs/crn_64_clevr
+
+# ARCHITECTURE OPTIONS
+image_size: !!python/tuple [64, 64]
+crop_size: 32
+batch_size: 32
+mask_size: 16
+d_obj_arch: C4-64-2,C4-128-2,C4-256-2
+d_img_arch: C4-64-2,C4-128-2,C4-256-2
+decoder_network_dims: !!python/tuple [1024,512,256,128,64]
+layout_pooling: sum
+
+# CRN weights
+percept_weight: 0
+weight_gan_feat: 0
+discriminator_loss_weight: 0.01
+d_obj_weight: 1
+ac_loss_weight: 0.1
+d_img_weight: 1
+l1_pixel_loss_weight: 1
+bbox_pred_loss_weight: 10
+
+# EXTRA OPTIONS
+feats_in_gcn: True
+feats_out_gcn: True
+is_baseline: False
+is_supervised: False
+num_iterations: 50000
+
+# LOGGING OPTIONS
+print_every: 500
+checkpoint_every: 2000
+max_num_imgs: 32

@@ -1,0 +1,43 @@
+# arguments for easier parsing
+seed: 1
+gpu: 0
+
+# DATA OPTIONS
+dataset: vg
+vg_image_dir: ./datasets/vg/images
+output_dir: experiments/vg
+checkpoint_name: spade_64_vg
+log_dir: experiments/vg/logs/spade_64_vg
+
+# ARCHITECTURE OPTIONS
+image_size: !!python/tuple [64, 64]
+crop_size: 32
+batch_size: 32
+mask_size: 16
+d_obj_arch: C4-64-2,C4-128-2,C4-256-2
+d_img_arch: C4-64-2,C4-128-2,C4-256-2
+decoder_network_dims: !!python/tuple [1024,512,256,128,64]
+layout_pooling: sum
+
+# spade weights + options
+percept_weight: 5
+weight_gan_feat: 5
+discriminator_loss_weight: 1
+d_obj_weight: 0.1
+ac_loss_weight: 0.1
+d_img_weight: 1
+l1_pixel_loss_weight: 1
+bbox_pred_loss_weight: 50
+multi_discriminator: True
+spade_gen_blocks: True
+
+# EXTRA OPTIONS
+feats_in_gcn: True
+feats_out_gcn: True
+is_baseline: False
+is_supervised: False
+
+# LOGGING OPTIONS
+print_every: 500
+checkpoint_every: 2000
+max_num_imgs: 32
