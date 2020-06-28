@@ -25,17 +25,11 @@ import itertools
 
 
 def get_rel(argument):
-    """switcher = {
-        0: "left",
-        1: "back",
-        2: "right",
-        3: "front"
-    }"""
     switcher = {
-        1: "left of",
-        0: "behind",
-        3: "right of",
-        2: "front of"
+        3: "left of",
+        2: "behind",
+        1: "right of",
+        0: "front of"
     }
     return switcher.get(argument, "Invalid label")
 
@@ -75,7 +69,6 @@ obj_alias_path = os.path.join(data_path, 'object_alias.txt')
 
 im_id = 0
 
-#allscenes = []
 num_objs = 0
 num_rels = 0
 obj_data = []
@@ -100,11 +93,11 @@ split_dic = {}
 rand_perm = np.random.choice(num_ims, num_ims, replace=False)
 train_split = int(num_ims * 0.8)
 val_split = int(num_ims * 0.9)
-print(rand_perm)
-train_list = [int(num) for num in rand_perm[0:train_split]] #list(range(0, train_split))
-val_list = [int(num) for num in rand_perm[train_split+1:val_split]] #list(range(train_split, val_split))
-test_list = [int(num) for num in rand_perm[val_split+1:num_ims]] #list(range(val_split, num_ims))
-print(val_list)
+
+train_list = [int(num) for num in rand_perm[0:train_split]]
+val_list = [int(num) for num in rand_perm[train_split+1:val_split]]
+test_list = [int(num) for num in rand_perm[val_split+1:num_ims]]
+
 split_dic['train'] = train_list
 split_dic['val'] = val_list
 split_dic['test'] = test_list
@@ -141,7 +134,7 @@ with open(labels_file_path, 'w') as labels_file:
                 obj.pop('shape')
                 obj.pop('rotation')
                 attr_obj = obj
-                attr_obj["attributes"] = [obj["color"]] #, obj["size"]
+                attr_obj["attributes"] = [obj["color"]]
                 obj.pop('size')
                 attr_objs.append(attr_obj)
 
@@ -152,7 +145,6 @@ with open(labels_file_path, 'w') as labels_file:
 
             pairs = list(itertools.combinations(objs, 2))
             indices = list((i,j) for ((i,_),(j,_)) in itertools.combinations(enumerate(objs), 2))
-            #ii = 0
             for ii, (obj, subj) in enumerate(pairs):
                 label = getLabel(obj['3d_coords'], subj['3d_coords'])
                 predicate = get_rel(label)

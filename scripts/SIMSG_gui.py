@@ -76,7 +76,7 @@ args = parser.parse_args()
 args.mode = "eval"
 if args.dataset == "clevr":
     assert args.random_feats == False
-    DATA_DIR = "./dataset/clevr/target/"
+    DATA_DIR = "./datasets/clevr/target/"
     args.data_image_dir = DATA_DIR
 else:
     DATA_DIR = "./datasets/vg/"
@@ -250,11 +250,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         for node in event.nodes:
             self.selected_node = node
+            self.graph.nodes[node]['edgecolor'] = 'C1'
 
             for combo_idx in range(self.comboBox_obj2.count()):
                 if self.comboBox_obj2.itemText(combo_idx) == self.selected_node:
                     break
             self.comboBox_obj2.setCurrentIndex(combo_idx)
+            graph.nodes[node]['size'] = 2500
+
+            for edge_attribute in graph[node].values():
+                edge_attribute['arrowsize'] = 200
+                edge_attribute['arrowstyle'] = "fancy"
 
             # draw object box whenever an object node is clicked
             if self.selected_node.split(".")[0] in vocab["object_idx_to_name"]:
@@ -496,9 +502,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.keep_box_idx[-2] = 0
         self.added_objs_idx[-2] = 1
 
-        if args.dataset == "clevr":
-            is_subject = not is_subject
-
         new_triples = []
         # copy already existing triples, with a bit of care for the image modes that have incremented idx
         for [s,p,o] in self.triples:
@@ -673,10 +676,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         if idx1 is not None and idx2 is not None:
             # its a predicate node
-            if args.dataset == "clevr":
-                temp = idx1
-                idx1 = idx2
-                idx2 = temp
             image = eval_utils.draw_image_edge(image, self.boxes[idx1].cpu().numpy(), self.boxes[idx2].cpu().numpy())
             image = eval_utils.draw_image_box(image, self.boxes[idx1].cpu().numpy())
             image = eval_utils.draw_image_box(image, self.boxes[idx2].cpu().numpy())
