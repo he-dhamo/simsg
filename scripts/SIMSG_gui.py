@@ -129,12 +129,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.new_objs = None
         self.new_triples = None
 
-        if args.dataset == "vg":
-            self.in_edge_width = 2
-            self.out_edge_width = 1
-        else:
-            self.in_edge_width = 1
-            self.out_edge_width = 2
+        self.in_edge_width = 2
+        self.out_edge_width = 1
 
         self.graph = None
 
