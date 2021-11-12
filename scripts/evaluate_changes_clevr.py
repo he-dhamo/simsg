@@ -410,7 +410,7 @@ def run_model(args, checkpoint, loader=None):
 
     for s in range(imgs.shape[0]):
       # get coordinates of target
-      left, right, top, bottom = bbox_coordinates_with_margin(boxes[s, :], margin, imgs)
+      left, right, top, bottom = bbox_coordinates_with_margin(boxes[subject_node, :], margin, imgs)
       if left > right or top > bottom:
         continue
       # print("bboxes with margin: ", left, right, top, bottom)
