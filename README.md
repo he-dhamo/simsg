@@ -25,6 +25,9 @@ If you find this code useful in your research, please cite
   year={2020}
 ```
 
+**Note:** The project page has been updated with new links for model checkpoints and data.
+
+
 ## Setup
 
 We have tested it on Ubuntu 16.04 with Python 3.7 and PyTorch 1.2.
