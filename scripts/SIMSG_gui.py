@@ -62,7 +62,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--checkpoint', default='./experiments/vg/spade_64_vg_model.pt')
 parser.add_argument('--dataset', default='vg', choices=['clevr', 'vg'])
 parser.add_argument('--data_h5', default=None)
-parser.add_argument('--predgraphs', default=False, type=bool_flag)
+parser.add_argument('--predgraphs', default=True, type=bool_flag)
 parser.add_argument('--image_size', default=(64, 64), type=int_tuple)
 parser.add_argument('--num_samples', default=10000, type=int)
 parser.add_argument('--update_input', default=True, type=bool_flag)
@@ -100,13 +100,13 @@ checkpoint = None
 
 def build_model():
     global checkpoint
-    checkpoint = torch.load(args.checkpoint)
+    checkpoint = torch.load(args.checkpoint, map_location=torch.device('cpu'))
 
     model = SIMSGModel(**checkpoint['model_kwargs'])
     model.load_state_dict(checkpoint['model_state'])
     model.eval()
     model.image_size = args.image_size
-    model.cuda()
+#   model.cuda()
     return model
 
 
@@ -465,9 +465,18 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # extract user input
         anchor_label, anchor_idx = self.comboBox_obj2.currentText().split(".")
         new_pred = self.comboBox_p2.currentText()
-        pred_id = torch.tensor(vocab["pred_name_to_idx"][new_pred]).cuda()
+
+        if torch.cuda.is_available():
+            pred_id = torch.tensor(vocab["pred_name_to_idx"][new_pred]).cuda()
+        else:
+            pred_id = torch.tensor(vocab["pred_name_to_idx"][new_pred])
+
         new_node = self.comboBox_sub2.currentText()
-        new_node_idx = torch.tensor(vocab["object_name_to_idx"][new_node]).cuda()
+
+        if torch.cuda.is_available():
+            new_node_idx = torch.tensor(vocab["object_name_to_idx"][new_node]).cuda()
+        else:
+            new_node_idx = torch.tensor(vocab["object_name_to_idx"][new_node])
 
         anchor_idx = int(anchor_idx)
         imgbox_idx = self.objs.shape[0] - 1
@@ -484,7 +493,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # add new box to list of boxes
         for box in self.boxes[:-1]:
             new_boxes.append(box)
-        new_boxes.append(torch.tensor([0, 0, 0, 0], dtype=torch.float32).cuda())
+
+        if torch.cuda.is_available():
+            new_boxes.append(torch.tensor([0, 0, 0, 0], dtype=torch.float32).cuda())
+        else:
+            new_boxes.append(torch.tensor([0, 0, 0, 0], dtype=torch.float32))
+
         new_boxes.append(self.boxes[-1])
 
         # expand and update the keep arrays. Set box and feat to 0 for the new node
@@ -692,8 +706,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         """
         self.batch = next(self.data_loader)
 
+        # self.imgs, self.objs, self.boxes, self.triples, self.obj_to_img, self.triple_to_img, self.imgs_in = \
+        #     [x.cuda() for x in self.batch]
         self.imgs, self.objs, self.boxes, self.triples, self.obj_to_img, self.triple_to_img, self.imgs_in = \
-            [x.cuda() for x in self.batch]
+                [x for x in self.batch]
 
         self.keep_box_idx = torch.ones_like(self.objs.unsqueeze(1), dtype=torch.float)
         self.keep_feat_idx = torch.ones_like(self.objs.unsqueeze(1), dtype=torch.float)
@@ -733,7 +749,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                                query_feats=query_feats, keep_box_idx=self.keep_box_idx,
                                keep_feat_idx=self.keep_feat_idx, combine_gt_pred_box_idx=self.combine_gt_pred_box_idx,
                                keep_image_idx=self.keep_image_idx, random_feats=args.random_feats,
-                               get_layout_boxes=True)
+                               get_layout_boxes=False)
 
         imgs_pred, boxes_pred, masks_pred, noised_srcs, _, layout_boxes = model_out
 

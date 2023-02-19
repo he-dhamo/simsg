@@ -42,7 +42,7 @@ class SceneGraphNoPairsDataset(Dataset):
 
     self.mode = mode
 
-    self.image_dir = image_dir
+    self.image_dir = bytes(image_dir, "utf-8")
     self.image_size = image_size
     self.vocab = vocab
     self.num_objects = len(vocab['object_idx_to_name'])

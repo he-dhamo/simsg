@@ -16,7 +16,7 @@
 
 import argparse, json, os
 from collections import Counter, defaultdict
-
+from tqdm import tqdm
 import numpy as np
 import h5py
 
@@ -314,11 +314,11 @@ def create_rel_vocab(args, image_ids, relationships, object_id_to_obj,
                      rel_aliases, vocab):
   pred_counter = defaultdict(int)
   image_ids_set = set(image_ids)
-  for image in relationships:
+  for image in tqdm(relationships):
     image_id = image['image_id']
     if image_id not in image_ids_set:
       continue
-    for rel in image['relationships']:
+    for rel in tqdm(image['relationships']):
       sid = rel['subject']['object_id']
       oid = rel['object']['object_id']
       found_subject = sid in object_id_to_obj
