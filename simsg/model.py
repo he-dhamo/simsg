@@ -193,7 +193,7 @@ class SIMSGModel(nn.Module):
                 query_feats=None, mode='train', t=0, query_idx=0, random_feats=False, get_layout_boxes=False):
         """
         Required Inputs:
-        - objs: LongTensor of shape (num_objs,) giving categories for all objects
+        - objs: LongTensor of shape (num_objs,) giving categories for all objects currently in the graph
         - triples: LongTensor of shape (num_triples, 3) where triples[t] = [s, p, o]
           means that there is a triple (objs[s], p, objs[o])
 

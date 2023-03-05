@@ -62,7 +62,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--checkpoint', default='./experiments/vg/spade_64_vg_model.pt')
 parser.add_argument('--dataset', default='vg', choices=['clevr', 'vg'])
 parser.add_argument('--data_h5', default=None)
-parser.add_argument('--predgraphs', default=True, type=bool_flag)
+parser.add_argument('--predgraphs', default=False, type=bool_flag)
 parser.add_argument('--image_size', default=(64, 64), type=int_tuple)
 parser.add_argument('--num_samples', default=10000, type=int)
 parser.add_argument('--update_input', default=True, type=bool_flag)
@@ -749,7 +749,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                                query_feats=query_feats, keep_box_idx=self.keep_box_idx,
                                keep_feat_idx=self.keep_feat_idx, combine_gt_pred_box_idx=self.combine_gt_pred_box_idx,
                                keep_image_idx=self.keep_image_idx, random_feats=args.random_feats,
-                               get_layout_boxes=False)
+                               get_layout_boxes=True)
 
         imgs_pred, boxes_pred, masks_pred, noised_srcs, _, layout_boxes = model_out
 
