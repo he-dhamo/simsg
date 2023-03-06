@@ -162,8 +162,11 @@ class SIMSGModel(nn.Module):
 
     def build_obj_feats_net(self):
         # get VGG16 features for each object RoI
-        vgg_net = T.models.vgg16(pretrained=True)
-        layers = list(vgg_net.features._modules.values())[:-1]
+        #vgg_net = T.models.vgg16(pretrained=True)
+        #layers = list(vgg_net.features._modules.values())[:-1]
+
+        res_net = T.models.resnet50(pretrained=True)
+        layers = list(res_net.children())[:-2]
 
         img_feats = nn.Sequential(*layers)
 
@@ -193,7 +196,7 @@ class SIMSGModel(nn.Module):
                 query_feats=None, mode='train', t=0, query_idx=0, random_feats=False, get_layout_boxes=False):
         """
         Required Inputs:
-        - objs: LongTensor of shape (num_objs,) giving categories for all objects currently in the graph
+        - objs: LongTensor of shape (num_objs,) giving categories for all objects
         - triples: LongTensor of shape (num_triples, 3) where triples[t] = [s, p, o]
           means that there is a triple (objs[s], p, objs[o])
 

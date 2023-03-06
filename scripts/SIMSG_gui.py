@@ -27,7 +27,6 @@ example) by setting the ``MPLBACKEND`` environment variable to "Qt4Agg" or
 
 import sys
 from builtins import enumerate
-
 import networkx as nx
 from grave import plot_network
 from grave.style import use_attributes
@@ -59,10 +58,10 @@ mpl.rcParams['savefig.pad_inches'] = 0
 plt.margins(0.0)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--checkpoint', default='./experiments/vg/spade_64_vg_model.pt')
+parser.add_argument('--checkpoint', default='E:/Fcis/4th Year Fcis/simsg/simsg/checkpoints/spade_64_vg_model.pt')
 parser.add_argument('--dataset', default='vg', choices=['clevr', 'vg'])
 parser.add_argument('--data_h5', default=None)
-parser.add_argument('--predgraphs', default=False, type=bool_flag)
+parser.add_argument('--predgraphs', default=True, type=bool_flag)
 parser.add_argument('--image_size', default=(64, 64), type=int_tuple)
 parser.add_argument('--num_samples', default=10000, type=int)
 parser.add_argument('--update_input', default=True, type=bool_flag)
@@ -79,7 +78,7 @@ if args.dataset == "clevr":
     DATA_DIR = "./datasets/clevr/target/"
     args.data_image_dir = DATA_DIR
 else:
-    DATA_DIR = "./datasets/vg/"
+    DATA_DIR = "E:/Fcis/4th Year Fcis/simsg/simsg/datasets/vg/"
     args.data_image_dir = os.path.join(DATA_DIR, 'images')
 
 if args.data_h5 is None:
@@ -749,7 +748,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                                query_feats=query_feats, keep_box_idx=self.keep_box_idx,
                                keep_feat_idx=self.keep_feat_idx, combine_gt_pred_box_idx=self.combine_gt_pred_box_idx,
                                keep_image_idx=self.keep_image_idx, random_feats=args.random_feats,
-                               get_layout_boxes=True)
+                               get_layout_boxes=False)
 
         imgs_pred, boxes_pred, masks_pred, noised_srcs, _, layout_boxes = model_out
 
