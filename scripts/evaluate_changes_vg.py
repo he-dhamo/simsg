@@ -41,7 +41,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--exp_dir', default='./experiments/vg/')
 parser.add_argument('--experiment', default="spade_vg", type=str)
 parser.add_argument('--checkpoint', default=None)
-parser.add_argument('--predgraphs', default=False, type=bool_flag)
+parser.add_argument('--predgraphs', default=True, type=bool_flag)
 parser.add_argument('--image_size', default=(64, 64), type=int_tuple)
 parser.add_argument('--shuffle', default=False, type=bool_flag)
 parser.add_argument('--loader_num_workers', default=0, type=int)
@@ -80,10 +80,18 @@ if args.predgraphs and SPLIT == "test":
 if args.checkpoint is None:
     args.checkpoint = os.path.join(args.exp_dir, args.experiment + "_model.pt")
 
+def remove_vgg(model_state):
+  def filt(pair):
+    key, val = pair
+    return "high_level_feat" not in key
+
+  return dict(filter(filt, model_state.items()))
+
 
 def build_model(args, checkpoint):
   model = SIMSGModel(**checkpoint['model_kwargs'])
-  model.load_state_dict(checkpoint['model_state'])
+  new_state = remove_vgg(checkpoint['model_state'])
+  model.load_state_dict(new_state, strict=False)
   model.eval()
   model.image_size = args.image_size
   model.cuda()

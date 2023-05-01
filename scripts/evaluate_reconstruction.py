@@ -16,6 +16,8 @@
 
 import numpy as np
 import torch
+import time
+import datetime
 import os
 import yaml
 import tqdm
@@ -39,7 +41,7 @@ from imageio import imsave
 
 from PerceptualSimilarity import models
 
-GPU = 1
+GPU = 0
 EVAL_ALL = True         # evaluate on all bounding boxes (batch size=1)
 IGNORE_SMALL = True
 
@@ -50,8 +52,8 @@ parser.add_argument('--experiment', default="spade_vg", type=str)
 parser.add_argument('--checkpoint', default=None)
 parser.add_argument('--dataset', default='vg', choices=['clevr', 'vg'])
 parser.add_argument('--with_feats', default=True, type=bool_flag)
-parser.add_argument('--generative', default=False, type=bool_flag)
-parser.add_argument('--predgraphs', default=False, type=bool_flag)
+parser.add_argument('--generative', default=True, type=bool_flag)
+parser.add_argument('--predgraphs', default=True, type=bool_flag)
 parser.add_argument('--mode', default='auto_nofeats', type=str)
 
 parser.add_argument('--data_h5', default=None)
@@ -84,9 +86,9 @@ if args.data_h5 is None:
 
 if args.checkpoint is None:
     ckpt = args.exp_dir + args.experiment
-    args.checkpoint = './{}_model.pt'.format(ckpt)
+    args.checkpoint = '{}_model.pt'.format(ckpt)
 
-CONFIG_FILE = args.exp_dir + 'logs/{}/args.yaml'.format(args.experiment)
+CONFIG_FILE = args.exp_dir + 'args_64_spade_vg.yaml'.format(args.experiment)
 IMG_SAVE_PATH = args.exp_dir + 'logs/{}/evaluation/'.format(args.experiment)
 RESULT_SAVE_PATH = args.exp_dir + 'logs/{}/evaluation/results/'.format(args.experiment)
 RESULT_FILE = RESULT_SAVE_PATH + '{}/test_results_{}.pickle'
@@ -96,7 +98,12 @@ print("feats", args.with_feats)
 torch.cuda.set_device(GPU)
 device = torch.device(GPU)
 
+def remove_vgg(model_state):
+  def filt(pair):
+    key, val = pair
+    return "high_level_feat" not in key
 
+  return dict(filter(filt, model_state.items()))
 def main():
 
     if not os.path.isfile(args.checkpoint):
@@ -119,7 +126,8 @@ def main():
     # initialize model and load checkpoint
     kwargs = checkpoint['model_kwargs']
     model = SIMSGModel(**kwargs)
-    model.load_state_dict(checkpoint['model_state'])
+    new_state = remove_vgg(checkpoint['model_state'])
+    model.load_state_dict(new_state, strict=False)
     model.eval()
     model.to(device)
 
