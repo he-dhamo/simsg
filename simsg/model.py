@@ -162,8 +162,11 @@ class SIMSGModel(nn.Module):
 
     def build_obj_feats_net(self):
         # get VGG16 features for each object RoI
-        vgg_net = T.models.vgg16(pretrained=True)
-        layers = list(vgg_net.features._modules.values())[:-1]
+        #vgg_net = T.models.vgg16(pretrained=True)
+        #layers = list(vgg_net.features._modules.values())[:-1]
+
+        res_net = T.models.resnet50(pretrained=True)
+        layers = list(res_net.children())[:-2]
 
         img_feats = nn.Sequential(*layers)
 
